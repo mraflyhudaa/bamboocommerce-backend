@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/User');
-var CryptoJS = require('crypto-js');
 var bcrypt = require('bcrypt');
+var jwt = require('jsonwebtoken');
 
 /* POST register */
 router.post('/register', async (req, res, next) => {
@@ -64,8 +64,18 @@ router.post('/login', async (req, res, next) => {
               .status(501)
               .json({ message: 'error while checking user password' });
           } else if (compareRes) {
+            const token = jwt.sign(
+              {
+                id: user._id,
+                isAdmin: user.isAdmin,
+              },
+              process.env.JWT_SECRET,
+              { expiresIn: '3d' }
+            );
             const { password, ...others } = user._doc;
-            res.status(201).json({ message: 'user logged in', data: others });
+            res
+              .status(201)
+              .json({ message: 'user logged in', data: { ...others, token } });
           } else {
             res.status(401).json({ message: 'Invalid credentials' });
           }
