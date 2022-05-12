@@ -7,11 +7,6 @@ const {
   verifyTokenAndAdmin,
 } = require('./verifyToken');
 
-/* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource');
-});
-
 /* PUT update user data */
 router.put('/:id', verifyTokenAndAuthorization, async (req, res, next) => {
   if (req.body.password) {
@@ -40,33 +35,61 @@ router.put('/:id', verifyTokenAndAuthorization, async (req, res, next) => {
 /* DELETE delete user data */
 router.delete('/:id', verifyTokenAndAuthorization, async (req, res, next) => {
   try {
-    await User.findByIdAndDelete(req.params.id, (error, deletedUser) => {
-      if (error) {
-        res.status(401).json(error);
-      } else {
-        res
-          .status(200)
-          .json({ message: 'User has been deleted', data: deletedUser });
-      }
-    });
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    const { username } = deletedUser._doc;
+    res.status(200).json({ message: `User ${username} has been deleted!` });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to delete user', error });
+    res.status(500).json({ message: 'Failed to delete user!', error });
   }
 });
 
 /* GET user data */
 router.get('/find/:id', verifyTokenAndAdmin, async (req, res, next) => {
   try {
-    await User.findById(req.params.id, (error, user) => {
-      if (error) {
-        res.status(401).json(error);
-      } else {
-        const { password, ...others } = user._doc;
-        res.status(200).json({ message: 'User found!', data: others });
-      }
-    });
+    const user = await User.findById(req.params.id);
+    const { password, ...others } = user._doc;
+    res.status(200).json({ message: 'User found!', data: others });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to find user', error });
+    res.status(500).json({ message: 'User not found!', error });
+  }
+});
+
+/* GET all user data */
+router.get('/', verifyTokenAndAdmin, async (req, res, next) => {
+  const query = req.query.new;
+  try {
+    const users = query
+      ? await User.find().sort({ _id: -1 }).limit(5)
+      : await User.find();
+    res.status(200).json({ message: 'Users found!', data: users });
+  } catch (error) {
+    res.status(500).json({ message: 'Users not found!', error });
+  }
+});
+
+/* GET user stats */
+router.get('/stats', verifyTokenAndAdmin, async (req, res, next) => {
+  const date = new Date();
+  const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
+
+  try {
+    const data = await User.aggregate([
+      { $match: { createdAt: { $gte: lastYear } } },
+      {
+        $project: {
+          month: { $month: '$createdAt' },
+        },
+      },
+      {
+        $group: {
+          _id: '$month',
+          total: { $sum: 1 },
+        },
+      },
+    ]);
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json(error);
   }
 });
 
