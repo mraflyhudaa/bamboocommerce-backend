@@ -5,10 +5,11 @@ var router = express.Router();
 const {
   verifyTokenAndAuthorization,
   verifyTokenAndAdmin,
+  verifyToken,
 } = require('./verifyToken');
 
 /* POST create cart */
-router.post('/', verifyTokenAndAuthorization, async (req, res, next) => {
+router.post('/', verifyToken, async (req, res, next) => {
   const newCart = new Cart(req.body);
   try {
     const savedCart = await newCart.save();
@@ -48,11 +49,11 @@ router.delete('/:id', verifyTokenAndAuthorization, async (req, res, next) => {
 
 /* GET user cart */
 router.get(
-  '/find/:userid',
+  '/find/:userId',
   verifyTokenAndAuthorization,
   async (req, res, next) => {
     try {
-      const cart = await Cart.findOne({ userId: req.params.userid });
+      const cart = await Cart.findOne({ userId: req.params.userId });
       res.status(200).json({ message: 'Cart found!', data: cart });
     } catch (error) {
       res.status(500).json({ message: 'Your cart is empty!', error });
