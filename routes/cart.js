@@ -1,6 +1,6 @@
-var express = require('express');
+const express = require('express');
 const Cart = require('../models/Cart');
-var router = express.Router();
+const router = express.Router();
 
 const {
   verifyTokenAndAuthorization,

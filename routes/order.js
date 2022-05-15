@@ -1,6 +1,6 @@
-var express = require('express');
+const express = require('express');
 const Order = require('../models/Order');
-var router = express.Router();
+const router = express.Router();
 
 const {
   verifyTokenAndAuthorization,
