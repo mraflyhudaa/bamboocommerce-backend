@@ -11,6 +11,7 @@ var productRouter = require('./routes/products');
 var cartRouter = require('./routes/cart');
 var orderRouter = require('./routes/order');
 var midtransRouter = require('./routes/midtrans');
+var rajaOngkirRouter = require('./routes/rajaOngkir');
 
 var app = express();
 
@@ -31,6 +32,7 @@ app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/payment', midtransRouter);
+app.use('/api/shipping', rajaOngkirRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
