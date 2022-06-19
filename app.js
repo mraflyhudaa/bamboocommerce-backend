@@ -10,8 +10,8 @@ var authRouter = require('./routes/auth');
 var productRouter = require('./routes/products');
 var cartRouter = require('./routes/cart');
 var orderRouter = require('./routes/order');
-var midtransRouter = require('./routes/midtrans');
-var rajaOngkirRouter = require('./routes/rajaOngkir');
+var midtransRouter = require('./routes/payment');
+var rajaOngkirRouter = require('./routes/shipping');
 
 var app = express();
 
