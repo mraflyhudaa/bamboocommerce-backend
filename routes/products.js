@@ -20,6 +20,6 @@ router.delete('/:id', verifyTokenAndAdmin, productController.deleteProduct);
 router.get('/find/:id', productController.productDetails);
 
 /* GET all products */
-router.get('/', verifyTokenAndAdmin, productController.allProduct);
+router.get('/', productController.allProduct);
 
 module.exports = router;
