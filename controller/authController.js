@@ -51,7 +51,7 @@ const register = async (req, res, next) => {
 
 /* LOGIN */
 const login = async (req, res, next) => {
-  await User.findOne({ username: req.body.username })
+  await User.findOne({ email: req.body.email })
     .then((user) => {
       if (!user) {
         return res.status(401).json('User not found');
