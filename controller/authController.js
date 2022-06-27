@@ -68,7 +68,7 @@ const login = async (req, res, next) => {
                 isAdmin: user.isAdmin,
               },
               process.env.JWT_SECRET,
-              { expiresIn: '3d' }
+              { expiresIn: '1d' }
             );
             const { password, ...others } = user._doc;
             res
