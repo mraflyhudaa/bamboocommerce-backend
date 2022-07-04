@@ -101,7 +101,7 @@ const login = async (req, res, next) => {
   await User.findOne({ email: req.body.email })
     .then((user) => {
       if (!user) {
-        return res.status(401).json('User not found');
+        return res.status(401).json({ message: 'User not found' });
       } else {
         bcrypt.compare(req.body.password, user.password, (err, compareRes) => {
           if (err) {
