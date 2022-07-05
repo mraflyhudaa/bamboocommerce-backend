@@ -4,9 +4,12 @@ const OrderSchema = new mongoose.Schema(
   {
     orderId: { type: String, required: true },
     userId: { type: String, required: true },
+    name: { type: String },
     products: [
       {
         productId: { type: String },
+        productName: { type: String },
+        dimension: { type: String },
         quantity: { type: Number, default: 1 },
       },
     ],
