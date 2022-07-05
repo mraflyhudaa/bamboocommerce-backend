@@ -2,6 +2,7 @@ var midtransClient = require('midtrans-client');
 
 /* GENERATE TRANSACTION TOKEN */
 const transactionToken = (req, res, next) => {
+  // const id = nanoid.customAlphabet('1234567890abcdefghijklmno', 10);
   let current = new Date();
   let timezoneOffset = current.getTimezoneOffset();
   let cDate =
@@ -25,43 +26,34 @@ const transactionToken = (req, res, next) => {
 
   let parameter = {
     transaction_details: {
-      order_id: `ORDER-105-${cTime}`,
-      gross_amount: 10000,
+      order_id: `ORDER-${req.body.nanoid}`,
+      gross_amount: req.body.total,
     },
-    item_details: [
-      {
-        id: 'ITEM1',
-        price: 10000,
-        quantity: 1,
-        name: 'Midtrans Bear',
-        brand: 'Midtrans',
-        category: 'Toys',
-        merchant_name: 'Midtrans',
-      },
-    ],
+    item_details: req.body.products,
+    // [
+    //   {
+    //     id: 'ITEM1',
+    //     price: 10000,
+    //     quantity: 1,
+    //     name: 'Midtrans Bear',
+    //     brand: 'Midtrans',
+    //     category: 'Toys',
+    //     merchant_name: 'Midtrans',
+    //   },
+    // ],
     customer_details: {
-      first_name: 'John',
-      last_name: 'Watson',
-      email: 'test@example.com',
-      phone: '+628123456',
-      billing_address: {
-        first_name: 'John',
-        last_name: 'Watson',
-        email: 'test@example.com',
-        phone: '081 2233 44-55',
-        address: 'Sudirman',
-        city: 'Jakarta',
-        postal_code: '12190',
-        country_code: 'IDN',
-      },
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      email: req.body.email,
+      phone: req.body.phone,
       shipping_address: {
-        first_name: 'John',
-        last_name: 'Watson',
-        email: 'test@example.com',
-        phone: '0 8128-75 7-9338',
-        address: 'Sudirman',
-        city: 'Jakarta',
-        postal_code: '12190',
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        email: req.body.email,
+        phone: req.body.phone,
+        address: req.body.address,
+        city: req.body.city,
+        postal_code: req.body.postal_code,
         country_code: 'IDN',
       },
     },
@@ -79,7 +71,7 @@ const transactionToken = (req, res, next) => {
       let transactionToken = transaction.token;
       res
         .status(200)
-        .json({ message: 'token aquired', token: transactionToken });
+        .json({ message: 'token acquired', token: transactionToken });
     })
     .catch((error) => {
       res.status(400).json(error.ApiResponse);
