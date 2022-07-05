@@ -11,7 +11,7 @@ const {
 router.post('/', verifyTokenAndAdmin, productController.createProduct);
 
 /* PUT update product data */
-router.put('/:id', verifyTokenAndAdmin, productController.productDetails);
+router.put('/:id', verifyTokenAndAdmin, productController.updateProduct);
 
 /* DELETE delete product data */
 router.delete('/:id', verifyTokenAndAdmin, productController.deleteProduct);
