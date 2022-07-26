@@ -49,6 +49,16 @@ const findUserOrder = async (req, res, next) => {
   }
 };
 
+/* FIND ORDER */
+const findOrder = async (req,res,next)=>{
+  try {
+    const order = await Order.findById(req.params.id)
+    res.status(200).json({message: 'Order found!', data: order})
+  } catch (error) {
+    res.status(500).json({message: 'Order not found!'})
+  }
+}
+
 /* FIND ALL ORDERS */
 const findAllOrders = async (req, res, next) => {
   try {
