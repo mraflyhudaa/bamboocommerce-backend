@@ -41,23 +41,36 @@ const deleteOrder = async (req, res, next) => {
 
 /* FIND USER ORDER */
 const findUserOrder = async (req, res, next) => {
-  try {
-    const orders = await Order.find({ userId: req.params.userId });
-    res.status(200).json({ message: 'Your orders found!', data: orders });
-  } catch (error) {
-    res.status(500).json({ message: 'Your order is empty!', error });
-  }
+  const userId = req.params.userId;
+  Order.find({ userId: userId }, (error, orders) => {
+    if (error) {
+      res.status(500).json(error);
+      return;
+    }
+    if (orders.length) {
+      res.status(200).json({ message: 'Your orders found!', data: orders });
+    } else {
+      res.status(404).json({ message: 'Your orders is empty!' });
+    }
+  });
+  // try {
+  //   const orders = await Order.find({ userId: userId });
+
+  //   res.status(200).json({ message: 'Your orders found!', data: orders });
+  // } catch (error) {
+  //   res.status(500).json({ message: 'Your order is empty!', error });
+  // }
 };
 
 /* FIND ORDER */
-const findOrder = async (req,res,next)=>{
+const findOrder = async (req, res, next) => {
   try {
-    const order = await Order.findById(req.params.id)
-    res.status(200).json({message: 'Order found!', data: order})
+    const order = await Order.findById(req.params.id);
+    res.status(200).json({ message: 'Order found!', data: order });
   } catch (error) {
-    res.status(500).json({message: 'Order not found!'})
+    res.status(500).json({ message: 'Order not found!' });
   }
-}
+};
 
 /* FIND ALL ORDERS */
 const findAllOrders = async (req, res, next) => {
