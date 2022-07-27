@@ -1,4 +1,5 @@
 var midtransClient = require('midtrans-client');
+var Order = require('../models/Order');
 
 /* GENERATE TRANSACTION TOKEN */
 const transactionToken = (req, res, next) => {
@@ -79,4 +80,68 @@ const transactionToken = (req, res, next) => {
     });
 };
 
-module.exports = { transactionToken };
+const notificationStatus = (req, res, next) => {
+  let apiClient = new midtransClient.Snap({
+    isProduction: false,
+    serverKey: process.env.MIDTRANS_SERVER_KEY,
+    clientKey: process.env.MIDTRANS_CLIENT_KEY,
+  });
+
+  let notificationJson = req.body;
+
+  const updateStatus = async (id, status) => {
+    await Order.findOneAndUpdate({ orderId: id }, { $set: { status: status } });
+  };
+
+  apiClient.transaction
+    .notification(notificationJson)
+    .then((statusResponse) => {
+      let orderId = statusResponse.order_id;
+      let transactionStatus = statusResponse.transaction_status;
+      let fraudStatus = statusResponse.fraud_status;
+
+      console.log(
+        `Transaction notification received. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}`
+      );
+
+      // Sample transactionStatus handling logic
+
+      if (transactionStatus == 'capture') {
+        if (fraudStatus == 'challenge') {
+          // TODO set transaction status on your database to 'challenge'
+          res.status(200).json('challenge');
+          // and response with 200 OK
+        } else if (fraudStatus == 'accept') {
+          // TODO set transaction status on your database to 'success'
+          updateStatus(orderId, 'success');
+          // Order.findOneAndUpdate({ orderId: orderId }, { status: 'success' });
+          // and response with 200 OK
+          res.status(200).json('success');
+        }
+      } else if (transactionStatus == 'settlement') {
+        // TODO set transaction status on your database to 'success'
+        updateStatus(orderId, 'success');
+        // Order.findOneAndUpdate({ orderId: orderId }, { status: 'success' });
+        // and response with 200 OK
+        res.status(200).json('success');
+      } else if (
+        transactionStatus == 'cancel' ||
+        transactionStatus == 'deny' ||
+        transactionStatus == 'expire'
+      ) {
+        // TODO set transaction status on your database to 'failure'
+        updateStatus(orderId, 'failure');
+        // Order.findOneAndUpdate({ orderId: orderId }, { status: 'failure' });
+        // and response with 200 OK
+        res.status(200).json('failure');
+      } else if (transactionStatus == 'pending') {
+        // TODO set transaction status on your database to 'pending' / waiting payment
+        updateStatus(orderId, 'pending');
+        // Order.findOneAndUpdate({ orderId: orderId }, { status: 'pending' });
+        // and response with 200 OK
+        res.status(200).json('pending');
+      }
+    });
+};
+
+module.exports = { transactionToken, notificationStatus };
