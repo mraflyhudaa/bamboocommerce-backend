@@ -125,4 +125,5 @@ module.exports = {
   findUserOrder,
   findAllOrders,
   monthlyIncome,
+  findOrder,
 };

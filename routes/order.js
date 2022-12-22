@@ -30,4 +30,11 @@ router.get('/', verifyTokenAndAdmin, orderController.findAllOrders);
 /* GET monthly income */
 router.get('/income', verifyTokenAndAdmin, orderController.monthlyIncome);
 
+/* GET one order */
+router.get(
+  '/findOrder/:id',
+  verifyTokenAndAuthorization,
+  orderController.findOrder
+);
+
 module.exports = router;
